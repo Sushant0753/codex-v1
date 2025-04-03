@@ -1,0 +1,243 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String       @id @default(auto()) @map("_id") @db.ObjectId
+  email             String       @unique
+  name              String
+  username          String       @unique
+  password          String
+  avatarUrl         String?
+  bio               String?
+  verifyCode        String?
+  verifyCodeExpiry  DateTime?
+  isVerified        Boolean      @default(false)
+  
+  // Stats & profile data
+  rank              Int          @default(0)
+  rating            Int          @default(1200)
+  currentStreak     Int          @default(0)
+  longestStreak     Int          @default(0)
+  lastSolvedAt      DateTime?
+  githubUsername    String?
+  website           String?
+  location          String?
+  
+  // Relations
+  submissions       Submission[]
+  problemLists      ProblemList[]
+  contestEntries    ContestEntry[]
+  badges            UserBadge[]
+  activities        Activity[]
+  followers         Follow[]     @relation("following")
+  following         Follow[]     @relation("follower")
+  
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model Problem {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  slug            String
+  description     String
+  difficulty      String
+  timeLimit       Int?           // in milliseconds
+  memoryLimit     Int?           // in KB
+  tags            String[]       @default([])
+  companies       String[]       @default([])
+  likes           Int            @default(0)
+  dislikes        Int            @default(0)
+  acceptanceRate  Float          @default(0)
+  totalSubmissions Int           @default(0)
+  successfulSubmissions Int      @default(0)
+  premium         Boolean        @default(false)
+  solved          Boolean        @default(false)
+  
+  // Relations
+  submissions     Submission[]
+  defaultCode     DefaultCode[]
+  testCases       TestCases[]
+  listItems       ProblemListItem[]
+  contestProblems ContestProblem[]
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Submission {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  code           String         // Submitted code snippet
+  fullCode       String         // Complete solution code
+  language       String
+  status         String         // ACCEPTED, WRONG_ANSWER, etc.
+  runtime        Int?           // Execution time in ms
+  memory         Int?           // Memory usage in KB
+  testResults    Json?          // Detailed test results
+  
+  // Relations
+  user           User           @relation(fields: [userId], references: [id])
+  userId         String         @db.ObjectId
+  problem        Problem        @relation(fields: [problemId], references: [id])
+  problemId      String         @db.ObjectId
+  contestEntryId String?        @db.ObjectId
+  contestEntry   ContestEntry?  @relation(fields: [contestEntryId], references: [id], onDelete: SetNull)
+  
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model DefaultCode {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  code           String
+  language       String
+  problem        Problem        @relation(fields: [problemId], references: [id])
+  problemId      String         @db.ObjectId
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model TestCases {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  input          String
+  output         String
+  isHidden       Boolean        @default(false)
+  explanation    String?
+  problem        Problem        @relation(fields: [problemId], references: [id])
+  problemId      String         @db.ObjectId
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Contest {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  description    String
+  startTime      DateTime
+  endTime        DateTime
+  isVisible      Boolean        @default(true)
+  
+  // Relations
+  contestProblems ContestProblem[]
+  contestEntries  ContestEntry[]
+  
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model ContestProblem {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  points         Int            // Points awarded for solving
+  order          Int            // Display order in contest
+  
+  // Relations
+  contestId      String         @db.ObjectId
+  contest        Contest        @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  problemId      String         @db.ObjectId
+  problem        Problem        @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  
+  @@unique([contestId, problemId])
+}
+
+model ContestEntry {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  score          Int            @default(0)
+  rank           Int?
+  startedAt      DateTime       @default(now())
+  
+  // Relations
+  userId         String         @db.ObjectId
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contestId      String         @db.ObjectId
+  contest        Contest        @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  submissions    Submission[]
+  
+  @@unique([userId, contestId])
+}
+
+model ProblemList {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  description    String?
+  isPublic       Boolean        @default(true)
+  
+  // Relations
+  userId         String         @db.ObjectId
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items          ProblemListItem[]
+  
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model ProblemListItem {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  order          Int
+  notes          String?
+  
+  // Relations
+  listId         String         @db.ObjectId
+  list           ProblemList    @relation(fields: [listId], references: [id], onDelete: Cascade)
+  problemId      String         @db.ObjectId
+  problem        Problem        @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  
+  @@unique([listId, problemId])
+}
+
+model Badge {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  name           String         @unique
+  description    String
+  icon           String         // Emoji or icon identifier
+  requirement    String         // How to earn this badge
+  
+  // Relations
+  userBadges     UserBadge[]
+  
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model UserBadge {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  awardedAt      DateTime       @default(now())
+  name           String         @unique
+  
+  // Relations
+  userId         String         @db.ObjectId
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId        String         @db.ObjectId
+  badge          Badge          @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, badgeId])
+}
+
+model Activity {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  activityType   String         // PROBLEM_SOLVED, CONTEST_JOINED, etc.
+  details        Json
+  
+  // Relations
+  userId         String         @db.ObjectId
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime       @default(now())
+}
+
+model Follow {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  followerId     String         @db.ObjectId
+  follower       User           @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId    String         @db.ObjectId
+  following      User           @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime       @default(now())
+  
+  @@unique([followerId, followingId])
+}
