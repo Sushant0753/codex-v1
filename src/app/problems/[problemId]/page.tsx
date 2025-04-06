@@ -112,7 +112,7 @@ export default async function ProblemPage({
   return (
     <div className="min-h-screen">
       <Navbar />
-      <div className="flex flex-col ">
+      <div className="flex flex-col pt-16">
         <main className="flex-1 py-8 md:py-12 container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
@@ -133,7 +133,6 @@ export default async function ProblemPage({
         <div className="container mx-auto p-6">Please log in to submit solutions</div>
       )}
     </div>
-    
   );
 }
 

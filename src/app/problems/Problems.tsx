@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import AnimatedHeading from "@/components/AnimatedHeadings";
 
 export async function getProblems() {
   // Return dummy data for testing purposes
@@ -91,16 +92,10 @@ export default function Problems() {
       </div>
 
       <div className="container mx-auto px-4 md:px-6">
-        <motion.div 
-          className="mb-12 text-center"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500">Problems</h2>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">Challenge yourself with our collection of algorithmic problems and sharpen your coding skills</p>
-        </motion.div>
-
+        <AnimatedHeading
+          title="Problems"
+          subtitle="Challenge yourself with our collection of algorithmic problems and sharpen your coding skills"
+        />
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
