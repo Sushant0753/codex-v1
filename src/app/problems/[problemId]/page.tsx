@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 export default async function ProblemPage({
   params,
 }: {
-  params?: { problemId?: string };
+  params: { problemId: string };
 }) {
   const session = await getServerSession();
   if (!session || !session.user) {
