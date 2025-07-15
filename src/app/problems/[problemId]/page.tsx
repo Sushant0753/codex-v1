@@ -9,14 +9,13 @@ import { redirect } from "next/navigation";
 export default async function ProblemPage({
   searchParams,
 }: {
-  searchParams?: { problemId?: string };
+  searchParams: Promise<{ problemId?: string }>
 }) {
   const session = await getServerSession();
   if (!session || !session.user) {
     redirect("/login?callbackUrl=/problems");
   }
-
-  const problemId = searchParams?.problemId;
+  const problemId = await searchParams.then(params => params.problemId);
   const id = problemId ? parseInt(problemId, 10) : NaN;
 
   if (isNaN(id)) {
