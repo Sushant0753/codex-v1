@@ -5,19 +5,19 @@ import { getProblem } from "@/lib/problem";
 import { getServerSession } from 'next-auth';
 import { redirect } from "next/navigation";
 
-interface ProblemPageProps {
+interface ProblemProps {
   params: {
     problemId: string;
   };
 }
 
-export default async function ProblemPage({ params }: ProblemPageProps) {
+export default async function ProblemPage({ params }: ProblemProps) {
   const session = await getServerSession();
   if (!session || !session.user) {
     redirect("/login?callbackUrl=/problems");
   }
 
-  const { problemId } = params || {};
+  const { problemId } = params;
   const id = problemId ? parseInt(problemId, 10) : NaN;
 
   if (isNaN(id)) {
