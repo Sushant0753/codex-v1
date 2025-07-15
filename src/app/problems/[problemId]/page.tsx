@@ -4,14 +4,9 @@ import { ProblemSubmitBar } from "@/components/ProblemSubmitBar";
 import { getProblem } from "@/lib/problem";
 import { getServerSession } from 'next-auth';
 import { redirect } from "next/navigation";
+import { ProblemPageProps } from "@/types/problemPage";
 
-interface ProblemProps {
-  params: {
-    problemId: string;
-  };
-}
-
-export default async function ProblemPage({ params }: ProblemProps) {
+export default async function ProblemPage({ params }: ProblemPageProps) {
   const session = await getServerSession();
   if (!session || !session.user) {
     redirect("/login?callbackUrl=/problems");
