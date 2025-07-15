@@ -6,16 +6,16 @@ import { getServerSession } from 'next-auth';
 import { redirect } from "next/navigation";
 
 export default async function ProblemPage({
-  parameter,
+  params,
 }: {
-  parameter: { problemId: string };
+  params: { problemId?: string };
 }) {
   const session = await getServerSession();
   if (!session || !session.user) {
     redirect("/login?callbackUrl=/problems");
   }
 
-  const { problemId } = parameter;
+  const { problemId } = params || {};
   const id = problemId ? parseInt(problemId, 10) : NaN;
 
   if (isNaN(id)) {
