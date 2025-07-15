@@ -5,25 +5,23 @@ import { getProblem } from "@/lib/problem";
 import { getServerSession } from 'next-auth';
 import { redirect } from "next/navigation";
 
-
 export default async function ProblemPage({
-  searchParams,
+  params
 }: {
-  searchParams: Promise<{ problemId?: string }>
+  params: Promise<{ problemId: string }>
 }) {
+  const { problemId } = await params;
   const session = await getServerSession();
-  if (!session || !session.user) {
+  if (!session?.user) {
     redirect("/login?callbackUrl=/problems");
   }
-  const problemId = await searchParams.then(params => params.problemId);
-  const id = problemId ? parseInt(problemId, 10) : NaN;
 
-  if (isNaN(id)) {
+  const id = parseInt(problemId, 10);
+  if (Number.isNaN(id)) {
     return <div className="container mx-auto p-6">Invalid problem ID</div>;
   }
 
   const problem = await getProblem(id);
-
   if (!problem) {
     return <div className="container mx-auto p-6">Problem not found</div>;
   }
