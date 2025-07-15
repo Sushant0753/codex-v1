@@ -9,7 +9,7 @@ const fetchUserData = async () => {
     const session = await getServerSession();
 
     if (!session?.user?.email) {
-        redirect("/sign-in");
+        redirect("/login");
     }
 
     const user = await prisma.user.findUnique({

@@ -7,15 +7,15 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl;
 
     if (token && (
-        url.pathname.startsWith('/sign-in') ||
+        url.pathname.startsWith('/login') ||
         url.pathname.startsWith('/verify') ||
-        url.pathname.startsWith('/sign-up') ||
+        url.pathname.startsWith('/register') ||
         url.pathname === '/'
     )) {
         return NextResponse.redirect(new URL('/dashboard', request.url));
     }
     if (!token && url.pathname.startsWith('/dashboard')) {
-        return NextResponse.redirect(new URL('/sign-in', request.url));
+        return NextResponse.redirect(new URL('/login', request.url));
     }
 
     return NextResponse.next();
@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        '/sign-in',
+        '/login',
         '/sign-out',
         '/',
         '/dashboard/:path*',

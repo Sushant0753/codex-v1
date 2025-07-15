@@ -96,11 +96,11 @@ export function Navbar() {
                                 </>
                             ) : (
                                 <>
-                                    <Link href="/sign-in">
+                                    <Link href="/login">
                                         <Button 
                                             variant="outline" 
                                             className={`border-gray-300 dark:border-gray-600 transition-all duration-200 hover:scale-105
-                                                ${isActivePage('/sign-in') 
+                                                ${isActivePage('/login') 
                                                     ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-semibold' 
                                                     : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800'
                                                 }`}
@@ -108,10 +108,10 @@ export function Navbar() {
                                             Log in
                                         </Button>
                                     </Link>
-                                    <Link href="/sign-up">
+                                    <Link href="/register">
                                         <Button 
                                             className={`transition-all duration-200 hover:scale-105
-                                                ${isActivePage('/sign-up') 
+                                                ${isActivePage('/register') 
                                                     ? 'bg-blue-700 hover:bg-blue-800' 
                                                     : 'bg-blue-600 hover:bg-blue-700'
                                                 } text-white`}
@@ -205,9 +205,9 @@ export function Navbar() {
                                             Log in
                                         </Link>
                                         <Link 
-                                            href="/sign-up" 
+                                            href="/register" 
                                             className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-200
-                                                ${isActivePage('/sign-up') 
+                                                ${isActivePage('/register') 
                                                     ? 'bg-blue-700 text-white font-semibold' 
                                                     : 'text-blue-600 dark:text-blue-500 hover:bg-gray-200 dark:hover:bg-gray-700'
                                                 }`}

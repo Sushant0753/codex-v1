@@ -93,7 +93,7 @@ export default async function ProblemPage({
 }) { 
   const session = await getServerSession();
   if(!session || !session.user) {
-    redirect("/sign-in?callbackUrl=/problems");
+    redirect("/login?callbackUrl=/problems");
   }
 
   const { problemId } = await params || {};

@@ -7,7 +7,7 @@ import AnimatedHeading from "@/components/AnimatedHeadings";
 const ContestsPage = async () => {
     const session = await getServerSession();
     if (!session?.user?.email) {
-        redirect("/sign-in");
+        redirect("/login");
     }
 
     return (

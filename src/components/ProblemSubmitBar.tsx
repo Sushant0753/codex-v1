@@ -103,12 +103,12 @@ function SubmitProblem({ problem }: { problem: IProblem }) {
     const [errorOutput, setErrorOutput] = useState<string>('');
 
     useEffect(() => {
-        let defaultCode: {[key: string] : string} = {};
-        if (problem.defaultCode && problem.defaultCode.length > 0) {
-            defaultCode = { code: problem.defaultCode[0].code };
+        if (!code.code && problem.defaultCode && problem.defaultCode.length > 0) {
+            setCode({ code: problem.defaultCode[0].code });
         }
-        setCode(defaultCode);
-    }, [problem.defaultCode]);
+    }, []);
+    
+    
 
     async function test() {
         try {
@@ -119,33 +119,45 @@ function SubmitProblem({ problem }: { problem: IProblem }) {
             console.log('Current code state before submission:', code);
             console.log('Code to submit:', code?.code);
             console.log('Problem ID:', problem.id);
+
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/execute`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code:code?.code, problemId:problem.id }),
+              });
+              
+              const data = await response.json();
+              
+              console.log("Execution Result:", data);
+              
     
-            const response = await axios.post('/api/execute', {
-                code: code?.code,  
-                problemId: problem.id
-            }, {
-                timeout: 10000,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            // const response = await axios.post('/api/execute', {
+            //     code: code?.code,  
+            //     problemId: problem.id
+            // }, {
+            //     timeout: 10000,
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     }
+            // });
             
             // Set output from response
             // setOutput(response.data.output || 'No output generated');
             
             // Include error output if present
-            setErrorOutput(response.data.errorOutput || '');
+            setErrorOutput(data.errorOutput || '');
             
-            setTestResults(response.data.testResults || []);
-            setPassedTests(response.data.passedTests || 0);
-            setTotalTests(response.data.totalTests || 0);
+            setTestResults(data.testResults || []);
+            setPassedTests(data.passedTests || 0);
+            setTotalTests(data.totalTests || 0);
 
-            if (response.data.status === "success") {
+            if (data.status === "success") {
                 setStatus(SubmitStatus.ACCEPTED);
                 toast.success('All tests passed!');
             } else {
                 setStatus(SubmitStatus.FAILED);
-                toast.error(`Execution failed: ${response.data.output}`);
+                toast.error(`Execution failed: ${data.output}`);
             }
             
         } catch (error: any) {

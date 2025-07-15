@@ -60,11 +60,17 @@ export default function SignUpVerify() {
     if (!validateForm()) return;
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/sign-up', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: formData.name, username: formData.username, email: formData.email, password: formData.password })
+        body: JSON.stringify({
+          name: formData.name,
+          username: formData.username,
+          email: formData.email,
+          password: formData.password
+        })
       });
+      
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Sign-up failed');
       setSuccess('Verification code sent! Check your email.');
@@ -94,7 +100,7 @@ export default function SignUpVerify() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Verification failed');
       setSuccess('Account verified! Redirecting...');
-      setTimeout(() => router.push('/sign-in'), 2000);
+      setTimeout(() => router.push('/login'), 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Verification failed');
     } finally {
@@ -110,7 +116,7 @@ export default function SignUpVerify() {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <Link href="/sign-in" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
               Sign in to your account
             </Link>
           </p>

@@ -21,7 +21,7 @@ const EditProfilePage = () => {
         const fetchUser = async () => {
             const session = await getSession();
             if (!session?.user?.email) {
-                router.push("/sign-in");
+                router.push("/login");
                 return;
             }
 
