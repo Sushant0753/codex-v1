@@ -6,6 +6,7 @@ import { getSession } from "next-auth/react";
 
 const EditProfilePage = () => {
     const router = useRouter();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
@@ -45,13 +46,12 @@ const EditProfilePage = () => {
     }, [router]);
 
     // Handle form input changes
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = () => {
+        setFormData({ ...formData });
     };
 
     // Handle form submission
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setSaving(true);
         setError("");
 

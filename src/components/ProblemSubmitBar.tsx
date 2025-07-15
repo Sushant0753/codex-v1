@@ -96,7 +96,11 @@ function Submissions({ problem }: { problem: IProblem }) {
 function SubmitProblem({ problem }: { problem: IProblem }) {
     const [code, setCode] = useState<Record<string, string>>({});
     const [status, setStatus] = useState<string>(SubmitStatus.SUBMIT);
-    const [testResults, setTestResults] = useState<any[]>([]);
+    interface TestResult {
+        passed: boolean;
+        error?: string;
+    }
+    const [testResults, setTestResults] = useState<TestResult[]>([]);
     const [passedTests, setPassedTests] = useState(0);
     const [totalTests, setTotalTests] = useState(0);
     // const [output, setOutput] = useState<string>('');
@@ -106,9 +110,7 @@ function SubmitProblem({ problem }: { problem: IProblem }) {
         if (!code.code && problem.defaultCode && problem.defaultCode.length > 0) {
             setCode({ code: problem.defaultCode[0].code });
         }
-    }, []);
-    
-    
+    }, [code, problem.defaultCode]);
 
     async function test() {
         try {
@@ -160,18 +162,30 @@ function SubmitProblem({ problem }: { problem: IProblem }) {
                 toast.error(`Execution failed: ${data.output}`);
             }
             
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Submission Error:', error);
             setStatus(SubmitStatus.FAILED);
-            
+
             // Handle axios error responses
-            if (error.response) {
-                // setOutput(error.response.data?.output || 'Execution failed');
-                setErrorOutput(error.response.data?.errorOutput || error.message);
+            if (
+                typeof error === 'object' &&
+                error !== null &&
+                'response' in error &&
+                typeof (error as { response?: unknown }).response === 'object' &&
+                (error as { response?: { data?: unknown } }).response !== null
+            ) {
+                const errResp = error as { response: { data?: { errorOutput?: string; [key: string]: unknown } } };
+                setErrorOutput(
+                    errResp.response.data?.errorOutput ||
+                    (typeof errResp.response.data?.message === 'string' ? errResp.response.data.message : undefined) ||
+                    'Execution failed'
+                );
+            } else if (typeof error === 'object' && error !== null && 'message' in error) {
+                setErrorOutput((error as { message?: string }).message || 'Error submitting solution');
             } else {
-                setErrorOutput(error.message || 'Error submitting solution');
+                setErrorOutput('Error submitting solution');
             }
-            
+
             toast.error('Error submitting solution');
         }
     }

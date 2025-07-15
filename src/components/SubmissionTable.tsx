@@ -69,7 +69,7 @@ function renderStatusIcon(status: string) {
 function formatTimestamp(timestamp: string) {
     try {
         return formatDistance(new Date(timestamp), new Date(), { addSuffix: true });
-    } catch (e) {
+    } catch {
         return "Unknown";
     }
 }
