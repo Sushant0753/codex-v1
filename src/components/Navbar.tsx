@@ -11,7 +11,7 @@ export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { theme, setTheme } = useTheme();
     const { data: session } = useSession();
-    const pathname = usePathname();
+    const pathname = usePathname() as string | null;
 
     const toggleTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
