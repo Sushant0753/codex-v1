@@ -5,7 +5,13 @@ import { getProblem } from "@/lib/problem";
 import { getServerSession } from 'next-auth';
 import { redirect } from "next/navigation";
 
-export default async function ProblemPage({ params }: { params: { problemId?: string } }) {
+interface ProblemPageProps {
+  params: {
+    problemId: string;
+  };
+}
+
+export default async function ProblemPage({ params }: ProblemPageProps) {
   const session = await getServerSession();
   if (!session || !session.user) {
     redirect("/login?callbackUrl=/problems");
