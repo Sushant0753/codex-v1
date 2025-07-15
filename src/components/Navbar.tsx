@@ -18,7 +18,7 @@ export function Navbar() {
         setTheme(newTheme);
     };
 
-    const isActivePage = (path) => {
+    const isActivePage = (path: string): boolean => {
         return pathname === path;
     };
 
