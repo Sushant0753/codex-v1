@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { ProblemStatement } from "@/components/ProblemStatement";
 import { ProblemSubmitBar } from "@/components/ProblemSubmitBar";
-import { getProblem } from "@/app/problems/lib/problem";
+import { getProblem } from "@/lib/problem";
 import { getServerSession } from 'next-auth';
 import { redirect } from "next/navigation";
 
